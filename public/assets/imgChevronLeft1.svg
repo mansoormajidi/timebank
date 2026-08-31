@@ -1,0 +1,12 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="chevron-left1" opacity="0.7" clip-path="url(#clip0_0_140)">
+<g id="--safe-zone">
+</g>
+<path id="icon" fill-rule="evenodd" clip-rule="evenodd" d="M9.16248 3.08752C9.39029 3.31533 9.39029 3.68467 9.16248 3.91248L6.07496 7L9.16248 10.0875C9.39029 10.3153 9.39029 10.6847 9.16248 10.9125C8.93467 11.1403 8.56533 11.1403 8.33752 10.9125L4.83752 7.41248C4.60972 7.18467 4.60972 6.81533 4.83752 6.58752L8.33752 3.08752C8.56533 2.85972 8.93467 2.85972 9.16248 3.08752Z" fill="#18181B"/>
+</g>
+<defs>
+<clipPath id="clip0_0_140">
+<rect width="14" height="14" fill="white"/>
+</clipPath>
+</defs>
+</svg>

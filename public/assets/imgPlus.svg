@@ -1,0 +1,12 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="plus" clip-path="url(#clip0_0_150)">
+<g id="--safe-zone">
+</g>
+<path id="icon" d="M12 4C12.5763 4 13.0435 4.46718 13.0435 5.04348V10.9565H18.9565C19.5328 10.9565 20 11.4237 20 12C20 12.5763 19.5328 13.0435 18.9565 13.0435H13.0435V18.9565C13.0435 19.5328 12.5763 20 12 20C11.4237 20 10.9565 19.5328 10.9565 18.9565V13.0435H5.04348C4.46718 13.0435 4 12.5763 4 12C4 11.4237 4.46718 10.9565 5.04348 10.9565H10.9565V5.04348C10.9565 4.46718 11.4237 4 12 4Z" fill="#FAFAFA"/>
+</g>
+<defs>
+<clipPath id="clip0_0_150">
+<rect width="24" height="24" fill="white"/>
+</clipPath>
+</defs>
+</svg>
