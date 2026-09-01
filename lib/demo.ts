@@ -5,7 +5,7 @@ export const quickActions: { id: string; title: string; icon: IconName }[] = [
   { id: 'numbers', title: 'شماره‌ها', icon: 'numbers' }, { id: 'topup', title: 'افزایش موجودی', icon: 'plus' },
 ];
 export const navigation: { id: string; title: string; icon: IconName }[] = [
-  { id: 'home', title: 'خانه', icon: 'home' }, { id: 'accounts', title: 'حساب‌ها', icon: 'accounts' },
+  { id: 'home', title: 'خانه', icon: 'home' }, { id: 'services', title: 'خدمات', icon: 'services' },
   { id: 'transfer', title: 'انتقال', icon: 'transfer' }, { id: 'statement', title: 'صورتحساب', icon: 'statement' },
 ];
 export const services: { id: string; title: string; icon: IconName; description: string }[] = [

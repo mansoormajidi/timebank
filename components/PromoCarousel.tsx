@@ -1,0 +1,17 @@
+'use client';
+import { useEffect,useRef,useState } from 'react';
+import { animate,motion,useMotionValue,useReducedMotion } from 'motion/react';
+import { Icon } from './Icon';
+const banners=[['هر دعوت، یک شانس برنده شدن PS5','با دعوت از دوستان خود، در قرعه‌کشی','۱۱۰ کنسول PS5 شرکت کنید.'],['دوستانت را همراه کن','کد دعوتت را با دوستانت به اشتراک بگذار','و یک شانس تازه داشته باش.'],['یک دعوت تا یک اتفاق خوب','جزئیات طرح دعوت از دوستان را ببین؛','این کمپین در نسخهٔ نمایشی فعال نیست.']];
+const mod=(n:number,count:number)=>(n%count+count)%count;
+export function PromoCarousel({onInvite,visibleIds,onDismiss}:{onInvite:()=>void;visibleIds:number[];onDismiss:(id:number)=>void}){
+ const viewport=useRef<HTMLDivElement>(null);const [width,setWidth]=useState(0);const [index,setIndex]=useState(0);const x=useMotionValue(0);const reduced=useReducedMotion();const busy=useRef(false);const dragging=useRef(false);const controls=useRef<ReturnType<typeof animate>|null>(null);const stride=width+12;const current=mod(index,visibleIds.length||1);
+ useEffect(()=>{const el=viewport.current;if(!el)return;const observer=new ResizeObserver(()=>setWidth(el.clientWidth));observer.observe(el);setWidth(el.clientWidth);return()=>observer.disconnect();},[]);
+ useEffect(()=>{controls.current?.stop();busy.current=false;x.set(-stride);},[stride,visibleIds.length,x]);
+ useEffect(()=>()=>controls.current?.stop(),[]);
+ function slide(delta:number,target?:number){if(busy.current)return;busy.current=true;controls.current=animate(x,-stride*(1+delta),{...(reduced?{duration:0}:{type:'spring',stiffness:280,damping:32}),onComplete:()=>{setIndex(target??mod(current+delta,visibleIds.length));x.set(-stride);busy.current=false;}});}
+ if(!visibleIds.length)return null;
+ return <div className="promo-wrap" aria-roledescription="اسلایدر" aria-label="دعوت از دوستان"><div className="promo-viewport" ref={viewport} dir="ltr"><motion.div className="promo-track" style={{x}} drag={visibleIds.length>1?'x':false} dragConstraints={{left:-2*stride,right:0}} dragElastic={.12} dragMomentum={false} onDragStart={()=>{controls.current?.stop();busy.current=false;dragging.current=true;}} onDragEnd={(_,info)=>{const delta=Math.abs(info.offset.x)>width*.18||Math.abs(info.velocity.x)>400?(info.offset.x<0?1:-1):0;slide(delta);requestAnimationFrame(()=>{dragging.current=false;});}}>
+ {[-1,0,1].map(offset=>{const id=visibleIds[mod(current+offset,visibleIds.length)];const banner=banners[id];return <section key={offset} className={`promo-card promo-tone-${id}`} style={{width:width||'100%'}} dir="rtl" aria-hidden={offset!==0} inert={offset!==0}><img draggable={false} className="ps5" src="/assets/imgImage18.png" alt="کنسول پلی‌استیشن ۵"/><div className="promo-copy"><h2>{banner[0]}</h2><p>{banner[1]}<br/>{banner[2]}</p><button onPointerDown={e=>e.stopPropagation()} onClick={()=>{if(!dragging.current)onInvite();}}>دعوت از دوستان<Icon name="chevron" size={12}/></button></div><button className="dismiss-promo" onPointerDown={e=>e.stopPropagation()} onClick={()=>onDismiss(id)} aria-label={`بستن بنر ${id+1}`}><Icon name="close" size={12}/></button></section>;})}
+ </motion.div></div><div className="page-dots interactive-dots" aria-label="بنرهای دعوت" dir="ltr">{visibleIds.map((id,i)=><button key={id} aria-label={`بنر ${id+1}`} aria-pressed={current===i} onClick={()=>{if(i!==current)slide(i>current?1:-1,i);}}><span className={current===i?'selected':''}/></button>)}</div></div>;
+}
