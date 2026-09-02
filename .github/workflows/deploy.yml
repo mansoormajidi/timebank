@@ -16,6 +16,9 @@ concurrency:
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository }}
+  DEPLOY_HOST: 143.14.59.7
+  DEPLOY_PORT: "22"
+  DEPLOY_USER: deploy
 
 jobs:
   build-and-deploy:
@@ -67,9 +70,6 @@ jobs:
       - name: Deploy immutable image
         shell: bash
         env:
-          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
-          DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
-          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
           IMAGE_DIGEST: ${{ steps.build.outputs.digest }}
         run: |
