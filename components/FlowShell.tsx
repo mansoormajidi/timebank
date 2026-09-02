@@ -5,7 +5,7 @@ export function StatusBar() {
   return <div className="status-bar" dir="ltr"><span>9:41</span><div className="status-levels"><img src="/assets/imgCellularConnection.svg" width="18" height="12" alt="" /><img src="/assets/imgWifi.svg" width="16" height="12" alt="" /><img src="/assets/imgBattery.svg" width="25" height="12" alt="" /></div></div>;
 }
 export function FlowShell({ title, subtitle, stepKey, onBack, onClose, progress, children, variant = '' }: { title: string; subtitle?: string; stepKey: string; onBack: () => void; onClose: () => void; progress?: number; variant?: string; children: ReactNode }) {
-  const compact=variant==='transfer-compact';
+  const compact=variant.split(' ').includes('transfer-compact');
   const heading = useRef<HTMLHeadingElement>(null);
   const scroll = useRef<HTMLDivElement>(null);
   useEffect(() => { heading.current?.focus({ preventScroll: true }); scroll.current?.scrollTo(0, 0); }, [stepKey]);

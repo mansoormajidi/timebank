@@ -712,3 +712,104 @@ button, a { touch-action: manipulation; }
 .otp-copy-button .icon { filter: brightness(0) invert(1); }
 .otp-copy-status { font-size: 11px; color: #668273; min-height: 22px; margin-top: 10px; }
 @media(max-width:360px) { .transfer-compact .transfer-surface { padding-inline: 12px; }.transfer-compact .recipient-initials{width:37px;height:37px;font-size:12px}.credentials-row{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr)} }
+
+/* Full-screen statement and top-up flows. */
+.internal-flow .flow-toolbar h1 { font-size: 18px; }
+.internal-flow .flow-intro p { font-size: 13px; line-height: 1.8; }
+.internal-flow .privacy-note { font-size: 11px; }
+.statement-flow .flow-scroll, .topup-flow .flow-scroll { padding-bottom: 28px; }
+.statement-flow .statement-view { gap: 14px; }
+.statement-flow .statement-balance { padding: 19px 17px; border: 1px solid #ffffff20; border-radius: 20px; box-shadow: 0 12px 28px -16px #131e3c80; }
+.statement-flow .statement-balance small { font-size: 11px; }
+.statement-flow .statement-balance strong { font-size: 20px; font-weight: 850; }
+.statement-flow .statement-balance em, .statement-flow .statement-summary em { font-size: 10px; }
+.statement-flow .statement-balance button { padding: 9px 11px; font-size: 11px; }
+.statement-flow .statement-search { height: 49px; padding-inline: 14px; border: 1px solid #fff; border-radius: 15px; box-shadow: 0 6px 22px -14px #131e3c3a; }
+.statement-flow .statement-search input { font-size: 12px; }
+.statement-flow .statement-tabs { padding: 4px; border-radius: 14px; }
+.statement-flow .statement-tabs button { min-height: 38px; font-size: 12px; }
+.statement-flow .quick-date-filters { gap: 7px; }
+.statement-flow .quick-date-filters button { min-width: 69px; padding: 9px 7px; font-size: 11px; }
+.statement-flow .quick-date-filters b { font-size: 9px; }
+.statement-flow .advanced-filters { padding: 17px; border-color: #fff; border-radius: 18px; box-shadow: 0 6px 22px -14px #131e3c3a; }
+.statement-flow .filter-section-head strong { font-size: 13px; }
+.statement-flow .filter-section-head button { font-size: 11px; }
+.statement-flow .advanced-filters label { gap: 7px; font-size: 10px; }
+.statement-flow .advanced-filters input, .statement-flow .advanced-filters select { height: 40px; padding-inline: 9px; font-size: 11px; }
+.statement-flow .statement-summary { gap: 10px; }
+.statement-flow .statement-summary > div { grid-template-columns: 36px 1fr; column-gap: 9px; padding: 13px; border-color: #fff; border-radius: 16px; box-shadow: 0 5px 18px -14px #131e3c38; }
+.statement-flow .statement-summary > div > span { width: 36px; height: 36px; font-size: 18px; }
+.statement-flow .statement-summary small { font-size: 10px; }
+.statement-flow .statement-summary strong { font-size: 11px; }
+.statement-flow .transaction-heading { margin-top: 4px; }
+.statement-flow .transaction-heading strong { font-size: 13px; }
+.statement-flow .transaction-heading span { font-size: 10px; }
+.statement-flow .transaction-group h3 { margin: 5px 3px 9px; font-size: 11px; }
+.statement-flow .transaction-card { margin-bottom: 9px; border-color: #fff; border-radius: 17px; box-shadow: 0 5px 18px -15px #131e3c35; }
+.statement-flow .transaction-main { gap: 10px; padding: 13px 11px; }
+.statement-flow .transaction-direction { width: 39px; height: 39px; border-radius: 12px; font-size: 19px; }
+.statement-flow .transaction-copy strong { font-size: 12px; }
+.statement-flow .transaction-copy small { font-size: 10px; }
+.statement-flow .transaction-amount { font-size: 12px; }
+.statement-flow .transaction-amount small { font-size: 9px; }
+.statement-flow .transaction-amount i { padding: 3px 7px; font-size: 9px; }
+.statement-flow .transaction-details { margin: 0 11px 11px; padding: 10px 11px; }
+.statement-flow .transaction-details > div { padding: 7px 0; font-size: 10px; }
+.statement-flow .statement-empty strong { font-size: 14px; }
+.statement-flow .statement-empty p, .statement-flow .statement-empty button { font-size: 11px; }
+.statement-flow .statement-disclaimer { font-size: 10px; }
+
+.topup-flow .topup-account, .topup-flow .topup-surface, .topup-flow .topup-invoice, .topup-flow .topup-receipt { background: white; border: 1px solid #fff; border-radius: 19px; box-shadow: 0 6px 24px -14px #131e3c3a; }
+.topup-flow .topup-account { gap: 13px; padding: 17px 16px; }
+.topup-flow .topup-wallet { width: 46px; height: 46px; border-radius: 14px; color: #75522f; background: linear-gradient(145deg,#f2e6d8,#e1c5a3); }
+.topup-flow .topup-wallet .icon { filter: brightness(0) saturate(100%) invert(12%) sepia(17%) saturate(1537%) hue-rotate(188deg) brightness(93%); }
+.topup-flow .topup-account > div { gap: 5px; }
+.topup-flow .topup-account small, .topup-flow .topup-account span { font-size: 10px; }
+.topup-flow .topup-account strong { font-size: 14px; font-weight: 700; }
+.topup-flow .topup-surface { padding: 20px 16px; margin-top: 16px; }
+.topup-flow .topup-amount-field .material-control { min-height: 66px; }
+.topup-flow .topup-amount-field input { height: 66px; text-align: center; font-size: 24px; font-weight: 900; letter-spacing: -1px; }
+.topup-flow .topup-amount-field .field-trailing { top: 11px; }
+.topup-flow .amount-suggestions { gap: 7px; margin: 16px 0 20px; }
+.topup-flow .amount-suggestions button { flex: 1; padding: 10px 4px; border: 0; background: #f4eee7; color: #805c37; font-size: 11px; }
+.topup-flow .topup-summary { padding: 5px 14px; border-radius: 15px; }
+.topup-flow .topup-summary > div { padding: 11px 0; font-size: 12px; }
+.topup-flow .flow-button { font-size: 14px; }
+.topup-flow .topup-security { margin: 14px 0 0; font-size: 10px; }
+.topup-flow .topup-error { margin: 13px 3px 0; text-align: right; font-size: 11px; }
+.topup-gateway-head { display: flex; align-items: center; gap: 11px; padding: 15px; color: white; background: radial-gradient(circle at 15% 0,#3c4d76,transparent 52%),linear-gradient(135deg,#172442,#23345a); border-radius: 19px; box-shadow: 0 11px 27px -16px #131e3c80; }
+.topup-gateway-head .gateway-shield { flex: 0 0 38px; width: 38px; height: 38px; border-radius: 12px; }
+.topup-gateway-head > div { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.topup-gateway-head strong { font-size: 13px; }
+.topup-gateway-head small { color: #d2d8e4; font-size: 10px; }
+.topup-gateway-head > b { font: 11px Arial; }
+.topup-flow .topup-invoice { display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; margin-top: 12px; }
+.topup-flow .topup-invoice > div { display: flex; flex-direction: column; gap: 6px; padding: 15px; }
+.topup-flow .topup-invoice > div + div { border-right: 1px solid #edf0f3; }
+.topup-flow .topup-invoice small { color: #818998; font-size: 10px; }
+.topup-flow .topup-invoice strong { font-size: 12px; }
+.topup-flow .topup-surface .gateway-warning { margin: 0 0 12px; padding: 11px; border-radius: 12px; background: #c2986b14; color: #7e654c; font-size: 10px; line-height: 1.8; }
+.topup-flow .topup-surface .demo-fill { display: block; margin: 0 0 17px; font-size: 11px; }
+.topup-flow .credentials-row { gap: 10px; }
+.topup-flow .flow-form { gap: 20px; }
+.topup-flow .button-stack { margin-top: 16px; }
+.topup-flow .topup-receipt { padding: 20px 18px; text-align: center; }
+.topup-flow .topup-receipt .success-lottie { width: 92px; height: 92px; margin-bottom: 5px; }
+.topup-flow .topup-receipt h2 { margin: 11px 0; font-size: 18px; font-weight: 750; }
+.topup-flow .topup-success-amount { display: flex; justify-content: center; align-items: center; gap: 6px; margin: 18px 0; }
+.topup-flow .topup-success-amount b { font-size: 27px; font-weight: 900; }
+.topup-flow .topup-receipt dl { margin: 0; padding-top: 7px; border-top: 1px solid #edf0f3; }
+.topup-flow .topup-receipt dl > div { display: flex; justify-content: space-between; gap: 10px; padding: 9px 0; font-size: 11px; }
+.topup-flow .topup-receipt dt { color: #858e9d; }
+.topup-flow .topup-receipt dd { margin: 0; text-align: left; }
+
+/* The transfer flow was deliberately compact; raise small labels one step for readability. */
+.transfer-compact .transfer-filters button { font-size: 12px; }
+.transfer-compact .recipients-list strong { font-size: 14px; }
+.transfer-compact .recipients-list small { font-size: 11px; }
+.transfer-compact .transfer-account strong { font-size: 14px; }
+.transfer-compact .transfer-account small { font-size: 11px; }
+.transfer-compact .confirm-summary > div { font-size: 12px; }
+.transfer-compact .transfer-methods strong { font-size: 13px; }
+.transfer-compact .transfer-methods small { font-size: 11px; }
+.transfer-compact .receipt-details > div { font-size: 11px; }

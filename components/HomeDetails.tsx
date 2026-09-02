@@ -5,8 +5,6 @@ import { CardActions } from './CardActions';
 import type { Activity, ActivityEvent } from '../lib/activity';
 import { account, services } from '../lib/demo';
 import { Icon } from './Icon';
-import { StatementView } from './StatementView';
-import { TopUpFlow } from './TopUpFlow';
 
 export const detailTitles: Record<string, string> = {
   'card-block': 'مسدودی کارت', 'card-password': 'رمز دوم پویا', 'giving-start': 'انجام کار خوب', 'endowment-start': 'انجام کار ماندگار', profile: 'حساب کاربری', notifications: 'اعلان‌ها', report: 'گزارش حساب', numbers: 'شماره‌های حساب',
@@ -25,8 +23,6 @@ function CopyField({ label, value, hidden }: { label: string; value: string; hid
 }
 
 export function HomeDetails({ id, hidden, onOpen, onClose, activities, onComplete, cardBlocked }: { id: string; hidden: boolean; onOpen: (id: string) => void; onClose: () => void; activities:Activity[]; onComplete:(a:ActivityEvent)=>void; cardBlocked:boolean }) {
-  if (id === 'statement') return <StatementView activities={activities} hidden={hidden} />;
-  if (id === 'topup') return <TopUpFlow onClose={onClose} onComplete={onComplete} />;
   if(id === 'card-block' || id === 'card-password') return <CardActions kind={id === 'card-block'?'block':'password'} blocked={cardBlocked} onComplete={onComplete} onClose={onClose}/>;
   if (id === 'giving-start' || id === 'endowment-start') return <GivingForm endowment={id === 'endowment-start'} onClose={onClose} onComplete={onComplete} />;
   const activity = activities.find(a => a.id === id);
@@ -43,5 +39,5 @@ export function HomeDetails({ id, hidden, onOpen, onClose, activities, onComplet
     accounts: 'مدیریت حساب‌ها و افتتاح حساب در مرحلهٔ بعد اضافه می‌شود.', transfer: 'انتقال کارت‌به‌کارت، پایا و ساتنا در مرحلهٔ بعد پیاده‌سازی می‌شود.',
     bill: 'استعلام و پرداخت قبوض در مرحلهٔ بعد اضافه می‌شود.', shrines: 'فهرست بقاع متبرکه و خدمات زیارتی در مرحلهٔ بعد تکمیل می‌شود.', lease: 'قراردادهای اجاره و پرداخت اجاره‌بهای موقوفات در مرحلهٔ بعد اضافه می‌شود.', auction: 'فهرست مزایده‌ها و ثبت درخواست در مرحلهٔ بعد پیاده‌سازی می‌شود.', welfare: 'امکانات اقامت و خدمات زائرین در مرحلهٔ بعد تکمیل می‌شود.',
   };
-  return <><span className="phase-badge">در مرحلهٔ بعد</span><h3 className="detail-heading">{detailTitles[id] || 'این بخش'}، به‌زودی</h3><p className="sheet-description">{descriptions[id] || 'این مسیر برای توسعهٔ مرحلهٔ بعد آماده است.'}</p><p className="sheet-note">این نسخه نمایشی است. هیچ اطلاعات بانکی یا وجهی دریافت نمی‌شود.</p>{id === 'accounts' && <button className="primary-button" onClick={() => onOpen('card')}>مشاهدهٔ کارت نمایشی</button>}{id === 'statement' && <button className="primary-button" onClick={() => onOpen('activity')}>مشاهدهٔ فعالیت‌های نمونه</button>}<button className="secondary-button" onClick={onClose}>بازگشت به خانه</button></>;
+  return <><span className="phase-badge">در مرحلهٔ بعد</span><h3 className="detail-heading">{detailTitles[id] || 'این بخش'}، به‌زودی</h3><p className="sheet-description">{descriptions[id] || 'این مسیر برای توسعهٔ مرحلهٔ بعد آماده است.'}</p><p className="sheet-note">این نسخه نمایشی است. هیچ اطلاعات بانکی یا وجهی دریافت نمی‌شود.</p>{id === 'accounts' && <button className="primary-button" onClick={() => onOpen('card')}>مشاهدهٔ کارت نمایشی</button>}<button className="secondary-button" onClick={onClose}>بازگشت به خانه</button></>;
 }

@@ -1,63 +1,33 @@
 'use client';
-
 import { useEffect, useRef, useState } from 'react';
 import type { ActivityEvent } from '../lib/activity';
+import { digits, money, DEMO_OTP } from '../lib/forms';
+import { isValidCardOtp } from '../lib/card-otp';
+import { DynamicOtpField } from './DynamicOtpField';
+import { FlowShell } from './FlowShell';
+import { Icon } from './Icon';
+import { MaterialField } from './MaterialField';
+import { SuccessAnimation } from './SuccessAnimation';
 
 type Step = 'amount' | 'gateway' | 'processing' | 'success';
-const faMoney = (value: number) => new Intl.NumberFormat('fa-IR').format(value);
-const normalizeDigits = (value: string) => value.replace(/[۰-۹]/g, digit => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(digit))).replace(/\D/g, '');
-
 export function TopUpFlow({ onClose, onComplete }: { onClose: () => void; onComplete: (event: ActivityEvent) => void }) {
   const [step, setStep] = useState<Step>('amount');
-  const [amount, setAmount] = useState('');
-  const [card, setCard] = useState('');
-  const [cvv, setCvv] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const recorded = useRef(false);
-  const numericAmount = Number(amount);
-  const validAmount = numericAmount >= 100000 && numericAmount <= 500000000;
+  const [amount, setAmount] = useState(''); const [card, setCard] = useState(''); const [cvv, setCvv] = useState('');
+  const [month, setMonth] = useState(''); const [year, setYear] = useState(''); const [password, setPassword] = useState('');
+  const [otpRequested, setOtpRequested] = useState(false); const [error, setError] = useState(''); const recorded = useRef(false);
+  const numericAmount = Number(amount); const validAmount = Number.isSafeInteger(numericAmount) && numericAmount >= 100000 && numericAmount <= 500000000;
+  const cardDisplay = card.replace(/(\d{4})(?=\d)/g, '$1 ');
 
-  useEffect(() => {
-    if (step !== 'processing') return;
-    const timer = window.setTimeout(() => {
-      if (!recorded.current) {
-        recorded.current = true;
-        onComplete({ title: 'افزایش موجودی', value: `${faMoney(numericAmount)} ریال`, icon: 'plus', details: [['حساب مقصد', 'هزینه‌های روزمره'], ['شماره پیگیری', '۸۴۶۲۹۱۷۵۳۰'], ['روش پرداخت', 'درگاه پرداخت اینترنتی']] });
-      }
-      setStep('success');
-    }, 1100);
-    return () => window.clearTimeout(timer);
-  }, [step, numericAmount, onComplete]);
+  useEffect(() => { if (step !== 'processing') return; const timer = window.setTimeout(() => { if (!recorded.current) { recorded.current = true; onComplete({ title: 'افزایش موجودی', value: `${money(numericAmount)} ریال`, icon: 'plus', details: [['حساب مقصد', 'هزینه‌های روزمره'], ['شماره پیگیری', '۸۴۶۲۹۱۷۵۳۰'], ['روش پرداخت', 'درگاه پرداخت اینترنتی']] }); } setStep('success'); }, 1100); return () => window.clearTimeout(timer); }, [step, numericAmount, onComplete]);
+  function back() { if (step === 'processing') return; if (step === 'gateway') { setError(''); setStep('amount'); } else onClose(); }
+  function pay() { const validOtp = isValidCardOtp(password) || otpRequested && password === DEMO_OTP; if (card.length !== 16 || !/^\d{3,4}$/.test(cvv) || !/^(0[1-9]|1[0-2])$/.test(month) || !/^\d{2}$/.test(year) || !validOtp) { setError('اطلاعات کارت و رمز پویا را کامل کنید. برای نسخهٔ آزمایشی می‌توانید از تکمیل خودکار استفاده کنید.'); return; } setError(''); setStep('processing'); }
+  function fillDemo() { setCard('6219861910111213'); setCvv('123'); setMonth('07'); setYear('08'); setPassword(DEMO_OTP); setOtpRequested(true); setError(''); }
 
-  function pay() {
-    if (card.replace(/\s/g, '').length !== 16 || cvv.length < 3 || expiry.length < 4 || password.length < 5) {
-      setError('برای ادامه، اطلاعات آزمایشی کارت را کامل کنید.'); return;
-    }
-    setError(''); setStep('processing');
-  }
-  function fillDemo() { setCard('۶۲۱۹ ۸۶۱۹ ۱۰۱۱ ۱۲۱۳'); setCvv('۱۲۳'); setExpiry('۰۷۰۸'); setPassword('۱۲۳۴۵۶'); setError(''); }
-
-  if (step === 'processing') return <div className="topup-processing" role="status"><div className="processing-spinner" /><h3>در حال تأیید پرداخت</h3><p>لطفاً این صفحه را نبندید…</p></div>;
-  if (step === 'success') return <div className="topup-success"><div className="success-mark">✓</div><span className="success-kicker">پرداخت موفق</span><h3>موجودی با موفقیت افزایش یافت</h3><p className="topup-success-amount">+{faMoney(numericAmount)} <small>ریال</small></p><dl><div><dt>حساب مقصد</dt><dd>هزینه‌های روزمره</dd></div><div><dt>شماره پیگیری</dt><dd>۸۴۶۲۹۱۷۵۳۰</dd></div><div><dt>زمان پرداخت</dt><dd>همین حالا</dd></div></dl><button className="primary-button" onClick={onClose}>بازگشت به خانه</button><p className="sheet-note">این رسید و پرداخت صرفاً نمایشی است.</p></div>;
-  if (step === 'gateway') return <div className="demo-gateway">
-    <header><div className="gateway-shield">✓</div><div><strong>درگاه پرداخت امن</strong><small>شبکه پرداخت تایم · نسخه آزمایشی</small></div><span>۰۹:۵۹</span></header>
-    <section className="gateway-invoice"><div><small>پذیرنده</small><strong>تایم‌بانک</strong></div><div><small>مبلغ پرداخت</small><strong>{faMoney(numericAmount)} ریال</strong></div></section>
-    <p className="gateway-warning">اطلاعات واقعی کارت را وارد نکنید. این درگاه فقط برای نمایش جریان پرداخت است.</p>
-    <button className="demo-data-button" onClick={fillDemo}>پر کردن اطلاعات آزمایشی</button>
-    <div className="gateway-form"><label>شماره کارت<input dir="ltr" inputMode="numeric" value={card} onChange={event => setCard(event.target.value.slice(0, 19))} placeholder="----  ----  ----  ----" /></label><div><label>CVV2<input dir="ltr" inputMode="numeric" value={cvv} onChange={event => setCvv(normalizeDigits(event.target.value).slice(0, 4))} /></label><label>تاریخ انقضا<input dir="ltr" inputMode="numeric" value={expiry} onChange={event => setExpiry(normalizeDigits(event.target.value).slice(0, 4))} placeholder="ماه / سال" /></label></div><label>رمز پویای آزمایشی<input dir="ltr" inputMode="numeric" type="password" value={password} onChange={event => setPassword(normalizeDigits(event.target.value).slice(0, 8))} /></label></div>
-    {error && <p className="topup-error" role="alert">{error}</p>}
-    <div className="gateway-actions"><button onClick={pay}>پرداخت آزمایشی</button><button onClick={() => setStep('amount')}>انصراف و بازگشت</button></div>
-  </div>;
-
-  return <div className="topup-entry">
-    <div className="topup-account"><span className="topup-wallet">＋</span><div><small>واریز به</small><strong>حساب هزینه‌های روزمره</strong><span>مانده فعلی: ۲۴۸٬۵۶۰٬۰۰۰ ریال</span></div></div>
-    <label className={`topup-amount ${amount ? 'has-value' : ''}`}><span>مبلغ افزایش موجودی</span><div><input autoFocus dir="ltr" inputMode="numeric" value={amount ? faMoney(numericAmount) : ''} onChange={event => setAmount(normalizeDigits(event.target.value))} placeholder="۰" /><small>ریال</small></div></label>
-    <div className="amount-suggestions">{[1000000, 5000000, 10000000].map(value => <button key={value} onClick={() => setAmount(String(value))}>+ {faMoney(value)}</button>)}</div>
-    {amount && !validAmount && <p className="topup-error" role="alert">مبلغ باید بین ۱۰۰٬۰۰۰ تا ۵۰۰٬۰۰۰٬۰۰۰ ریال باشد.</p>}
-    <section className="topup-summary"><div><span>مبلغ واریز</span><strong>{amount ? faMoney(numericAmount) : '۰'} ریال</strong></div><div><span>کارمزد</span><strong>رایگان</strong></div></section>
-    <button className="primary-button topup-submit" disabled={!validAmount} onClick={() => setStep('gateway')}>واریز به حساب</button>
-    <p className="topup-security"><span>✓</span> پرداخت در درگاه امن و آزمایشی انجام می‌شود.</p>
-  </div>;
+  const titles: Record<Step, string> = { amount: 'افزایش موجودی', gateway: 'پرداخت', processing: 'در حال پرداخت', success: 'رسید افزایش موجودی' };
+  return <FlowShell variant="transfer-compact internal-flow topup-flow" title={titles[step]} subtitle={step === 'amount' ? 'مبلغ موردنظر را به حساب خود اضافه کنید.' : undefined} stepKey={step} onBack={back} onClose={onClose}>
+    {step === 'processing' && <div className="processing-panel" role="status"><div className="processing-spinner" /><h2>در حال تأیید پرداخت</h2><p>هیچ درخواستی به شبکهٔ بانکی ارسال نمی‌شود.</p></div>}
+    {step === 'success' && <><section className="topup-receipt"><SuccessAnimation /><span className="receipt-status">پرداخت نمایشی موفق</span><h2>موجودی افزایش یافت</h2><div className="topup-success-amount"><b>+{money(numericAmount)}</b><Icon name="rial" size={22} /></div><dl><div><dt>حساب مقصد</dt><dd>هزینه‌های روزمره</dd></div><div><dt>شماره پیگیری</dt><dd>۸۴۶۲۹۱۷۵۳۰</dd></div><div><dt>روش پرداخت</dt><dd>درگاه اینترنتی</dd></div><div><dt>زمان پرداخت</dt><dd>همین حالا</dd></div></dl><p className="sheet-note">این رسید و پرداخت صرفاً نمایشی است.</p></section><button className="flow-button" onClick={onClose}>بازگشت به خانه</button></>}
+    {step === 'gateway' && <><section className="topup-gateway-head"><span className="gateway-shield">✓</span><div><strong>درگاه پرداخت امن</strong><small>شبکه پرداخت تایم · نسخهٔ آزمایشی</small></div><b>۰۹:۵۹</b></section><section className="topup-invoice"><div><small>پذیرنده</small><strong>تایم‌بانک</strong></div><div><small>مبلغ پرداخت</small><strong>{money(numericAmount)} ریال</strong></div></section><section className="topup-surface"><p className="gateway-warning">اطلاعات واقعی کارت را وارد نکنید. این درگاه فقط جریان پرداخت را نمایش می‌دهد.</p><button className="demo-fill" onClick={fillDemo}>تکمیل اطلاعات آزمایشی</button><div className="flow-form"><MaterialField label="شماره کارت" value={cardDisplay} dir="ltr" inputMode="numeric" maxLength={19} onChange={event => setCard(digits(event.target.value).slice(0, 16))} /><div className="credentials-row"><MaterialField label="CVV2" value={cvv} type="password" dir="ltr" inputMode="numeric" maxLength={4} onChange={event => setCvv(digits(event.target.value))} /><div className="field-pair"><MaterialField label="ماه" value={month} dir="ltr" inputMode="numeric" maxLength={2} onChange={event => setMonth(digits(event.target.value))} /><MaterialField label="سال" value={year} dir="ltr" inputMode="numeric" maxLength={2} onChange={event => setYear(digits(event.target.value))} /></div></div><DynamicOtpField value={password} onChange={setPassword} onRequest={() => setOtpRequested(true)} /></div>{error && <p className="topup-error" role="alert">{error}</p>}</section><div className="button-stack"><button className="flow-button" onClick={pay}>پرداخت نمایشی {money(numericAmount)} ریال</button><button className="flow-button secondary" onClick={() => setStep('amount')}>انصراف و بازگشت</button></div></>}
+    {step === 'amount' && <><section className="topup-account"><span className="topup-wallet"><Icon name="plus" size={23} /></span><div><small>واریز به</small><strong>حساب هزینه‌های روزمره</strong><span>مانده فعلی: ۲۴۸٬۵۶۰٬۰۰۰ ریال</span></div></section><section className="topup-surface topup-amount-surface"><MaterialField className="topup-amount-field" label="مبلغ افزایش موجودی" value={amount ? money(numericAmount) : ''} dir="ltr" inputMode="numeric" trailing={<Icon name="rial" size={20} />} onChange={event => setAmount(digits(event.target.value).slice(0, 12))} /><div className="amount-suggestions">{[1000000, 5000000, 10000000].map(value => <button key={value} onClick={() => setAmount(String(value))}>+ {money(value)}</button>)}</div>{amount && !validAmount && <p className="topup-error" role="alert">مبلغ باید بین ۱۰۰٬۰۰۰ تا ۵۰۰٬۰۰۰٬۰۰۰ ریال باشد.</p>}<div className="topup-summary"><div><span>مبلغ واریز</span><strong>{amount ? money(numericAmount) : '۰'} ریال</strong></div><div><span>کارمزد</span><strong>رایگان</strong></div></div></section><button className="flow-button" disabled={!validAmount} onClick={() => setStep('gateway')}>ادامه و پرداخت</button><p className="topup-security"><span>✓</span> پرداخت در درگاه امن و آزمایشی انجام می‌شود.</p></>}
+  </FlowShell>;
 }

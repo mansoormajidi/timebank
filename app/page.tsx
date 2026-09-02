@@ -5,6 +5,8 @@ import { BottomNavigation } from '../components/BottomNavigation';
 import { BottomSheet } from '../components/BottomSheet';
 import { HomeDetails, detailTitles } from '../components/HomeDetails';
 import { TransferFlow } from '../components/TransferFlow';
+import { StatementFlow } from '../components/StatementFlow';
+import { TopUpFlow } from '../components/TopUpFlow';
 import { AuthFlow } from '../components/AuthFlow';
 import { PromoCarousel } from '../components/PromoCarousel';
 import { Icon } from '../components/Icon';
@@ -15,7 +17,7 @@ export default function Home() {
   const {items:activities,record}=useActivityLog();
   const cardBlocked=activities.find(a=>a.title==='مسدودی گرین‌کارت'||a.title==='رفع مسدودی گرین‌کارت')?.title==='مسدودی گرین‌کارت';
   const [boot,setBoot]=useState(true);
-  const [screen, setScreen] = useState<'home' | 'login' | 'signup' | 'transfer'>('login');
+  const [screen, setScreen] = useState<'home' | 'login' | 'signup' | 'transfer' | 'statement' | 'topup'>('login');
   const [homeEntry, setHomeEntry] = useState(0);
   const [hidden, setHidden] = useState(false);
   const [detail, setDetail] = useState<string | null>(null);
@@ -25,7 +27,7 @@ export default function Home() {
   const [notificationsRead, setNotificationsRead] = useState(false);
   const reduced = useReducedMotion();
   const close = useCallback(() => { setDetail(null); setActive('home'); }, []);
-  function open(id: string) { if (id === 'login' || id === 'signup' || id === 'transfer') { setDetail(null); setScreen(id); return; } setDetail(id); if (id === 'notifications') setNotificationsRead(true); }
+  function open(id: string) { if (id === 'login' || id === 'signup' || id === 'transfer' || id === 'statement' || id === 'topup') { setDetail(null); setScreen(id); return; } setDetail(id); if (id === 'notifications') setNotificationsRead(true); }
   function navigate(id: string) {
     setActive(id);
     if (id === 'home') { setDetail(null); document.getElementById('home-scroll')?.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' }); }
@@ -34,7 +36,7 @@ export default function Home() {
   return <MotionConfig reducedMotion="user"><div className="preview-stage">
     <header className="preview-heading"><span className="preview-dot" />پروتوتایپ تایم‌بانک<span dir="ltr">HOME / LIGHT</span></header>
     <main className="app-shell" dir="rtl">
-      {screen === 'transfer' ? <TransferFlow onComplete={record} onClose={() => { setScreen('home'); setActive('home'); setScrolled(false); setHomeEntry(e => e + 1); }} /> : screen !== 'home' ? <AuthFlow key={screen} initialMode={screen} playSplash={boot} onClose={() => { setBoot(false); setScreen('home'); setHomeEntry(e => e + 1); setScrolled(false); }} /> : <div className="home-screen" key={homeEntry}>
+      {screen === 'transfer' ? <TransferFlow onComplete={record} onClose={() => { setScreen('home'); setActive('home'); setScrolled(false); setHomeEntry(e => e + 1); }} /> : screen === 'statement' ? <StatementFlow activities={activities} hidden={hidden} onClose={() => { setScreen('home'); setActive('home'); setHomeEntry(e => e + 1); }} /> : screen === 'topup' ? <TopUpFlow onComplete={record} onClose={() => { setScreen('home'); setActive('home'); setHomeEntry(e => e + 1); }} /> : screen !== 'home' ? <AuthFlow key={screen} initialMode={screen} playSplash={boot} onClose={() => { setBoot(false); setScreen('home'); setHomeEntry(e => e + 1); setScrolled(false); }} /> : <div className="home-screen" key={homeEntry}>
       <div className={`fixed-home-header ${scrolled ? 'is-scrolled' : ''}`} inert={!!detail}>          <div className="status-bar" dir="ltr"><span>9:41</span><div className="status-levels"><img src="/assets/imgCellularConnection.svg" width="18" height="12" alt="" /><img src="/assets/imgWifi.svg" width="16" height="12" alt="" /><img src="/assets/imgBattery.svg" width="25" height="12" alt="" /></div></div>
           <header className="app-toolbar flex items-center justify-between">
             <button className="avatar" onClick={() => open('profile')} aria-label="حساب کاربری"><img src="/assets/avatar.png" alt="" /></button>
@@ -58,7 +60,7 @@ export default function Home() {
         </div>
       </div>
       <div inert={!!detail} aria-hidden={detail?true:undefined}><BottomNavigation active={active} onNavigate={navigate} /></div>
-      <AnimatePresence mode="wait">{detail && <BottomSheet className={detail === 'statement' ? 'statement-sheet' : detail === 'topup' ? 'topup-sheet' : ''} key={detail} title={detailTitles[detail] || activities.find(a => a.id === detail)?.title || 'جزئیات'} onClose={close}><HomeDetails activities={activities} onComplete={record} cardBlocked={cardBlocked} id={detail} hidden={hidden} onOpen={open} onClose={close} /></BottomSheet>}</AnimatePresence>
+      <AnimatePresence mode="wait">{detail && <BottomSheet key={detail} title={detailTitles[detail] || activities.find(a => a.id === detail)?.title || 'جزئیات'} onClose={close}><HomeDetails activities={activities} onComplete={record} cardBlocked={cardBlocked} id={detail} hidden={hidden} onOpen={open} onClose={close} /></BottomSheet>}</AnimatePresence>
     </div>}
     </main><footer className="preview-footer"><span>نسخهٔ روشن، بر پایهٔ طرح اصلی</span><span className="palette"><i /><i /><i /></span></footer>
   </div></MotionConfig>;
