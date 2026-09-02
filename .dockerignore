@@ -1,0 +1,13 @@
+.git
+.github
+.next
+.secrets
+.vinext
+dist
+node_modules
+npm-debug.log*
+work
+outputs
+.env*
+*.pem
+*.tsbuildinfo
