@@ -59,12 +59,13 @@ jobs:
         shell: bash
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
         run: |
           install -m 700 -d ~/.ssh
           printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/timebank_deploy
           chmod 600 ~/.ssh/timebank_deploy
-          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          printf '%s\n' \
+            '143.14.59.7 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDTJ1tDpOWExYdJ/zNt+BMEOyqXSLRANFKdfG9pKw4Zi' \
+            > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
 
       - name: Deploy immutable image
