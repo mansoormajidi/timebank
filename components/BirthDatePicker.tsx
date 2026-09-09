@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { MaterialField } from './MaterialField';
 import { persianDigits } from '../lib/forms';
+import { ActionButton } from './ui/ActionButton';
 const months=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
 function daysInMonth(year:number,month:number){if(month<7)return 31;if(month<12)return 30;const f=new Intl.DateTimeFormat('en-u-ca-persian',{year:'numeric',month:'numeric',day:'numeric',timeZone:'UTC'});return [19,20,21].some(d=>{const parts=f.formatToParts(new Date(Date.UTC(year+622,2,d)));return parts.find(p=>p.type==='year')?.value===String(year)&&parts.find(p=>p.type==='month')?.value==='12'&&parts.find(p=>p.type==='day')?.value==='30';})?30:29;}
 export function BirthDatePicker({value,onChange,error}:{value:string;onChange:(v:string)=>void;error?:string}) {
@@ -12,6 +13,6 @@ export function BirthDatePicker({value,onChange,error}:{value:string;onChange:(v
     <label>روز<select aria-label="روز" value={day} onChange={e=>setDay(Number(e.target.value))}>{Array.from({length:last},(_,i)=><option value={i+1} key={i}>{persianDigits(String(i+1))}</option>)}</select></label>
     <label>ماه<select aria-label="ماه" value={month} onChange={e=>{setMonth(Number(e.target.value));setDay(1);}}>{months.map((m,i)=><option value={i+1} key={m}>{m}</option>)}</select></label>
     <label>سال<select aria-label="سال" value={year} onChange={e=>{setYear(Number(e.target.value));setDay(1);}}>{Array.from({length:current-1299},(_,i)=><option value={current-i} key={i}>{persianDigits(String(current-i))}</option>)}</select></label>
-  </div><button type="button" className="primary-button" onClick={()=>{onChange(`${year}/${String(month).padStart(2,'0')}/${String(Math.min(day,last)).padStart(2,'0')}`);setOpen(false);}}>تأیید تاریخ</button></div>}
+  </div><ActionButton shape="pill" className="primary-button" onClick={()=>{onChange(`${year}/${String(month).padStart(2,'0')}/${String(Math.min(day,last)).padStart(2,'0')}`);setOpen(false);}}>تأیید تاریخ</ActionButton></div>}
  </div>;
 }

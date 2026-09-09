@@ -10,13 +10,14 @@ import { BirthDatePicker } from './BirthDatePicker';
 import { AuthAnimation } from './AuthAnimation';
 import { SuccessAnimation } from './SuccessAnimation';
 import { CameraCapture } from './CameraCapture';
+import { ActionButton } from './ui/ActionButton';
 import { DEMO_OTP, digits, latinDigits, passwordRules } from '../lib/forms';
 type Mode = 'login' | 'signup';
 type LoginStep = 'form' | 'otp' | 'password' | 'quick';
 type SignupStep = 'form' | 'otp' | 'password' | 'identity' | 'card' | 'cardDetails' | 'videoGuide' | 'video' | 'success';
 const loginOrder: LoginStep[] = ['form', 'otp', 'password', 'quick'];
 const signupOrder: SignupStep[] = ['form', 'otp', 'password', 'identity', 'card', 'cardDetails', 'videoGuide', 'video', 'success'];
-function FlowButton({ children, onClick, disabled, secondary = false, type = 'button' }: { children: React.ReactNode; onClick?: () => void; disabled?: boolean; secondary?: boolean; type?: 'button'|'submit' }) { return <button type={type} className={secondary ? 'flow-button secondary' : 'flow-button'} onClick={onClick} disabled={disabled}>{children}</button>; }
+function FlowButton({ children, onClick, disabled, secondary = false, type = 'button' }: { children: React.ReactNode; onClick?: () => void; disabled?: boolean; secondary?: boolean; type?: 'button'|'submit' }) { return <ActionButton type={type} variant={secondary ? 'secondary' : 'primary'} className={secondary ? 'flow-button secondary' : 'flow-button'} onClick={onClick} disabled={disabled}>{children}</ActionButton>; }
 export function AuthFlow({ initialMode, onClose, playSplash = false }: { initialMode: Mode; onClose: () => void; playSplash?: boolean }) {
   const [splashDone,setSplashDone] = useState(!playSplash);
   const [mode, setMode] = useState<Mode>(initialMode);

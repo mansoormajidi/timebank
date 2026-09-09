@@ -1,0 +1,27 @@
+{
+  "name": "تایم‌بانک",
+  "short_name": "تایم‌بانک",
+  "description": "پروتوتایپ تعاملی خدمات بانکی و اوقاف",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#131E3C",
+  "theme_color": "#131E3C",
+  "icons": [
+    {
+      "src": "/icons/timebank-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/timebank-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

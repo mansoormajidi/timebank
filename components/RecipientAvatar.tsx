@@ -1,7 +1,7 @@
-const tones = ['sage', 'slate', 'sand', 'navy'];
-export function RecipientAvatar({ name, initials }: { name: string; initials?: string }) {
+export function avatarForName(name: string) {
   const hash = [...name].reduce((value, letter) => (Math.imul(value, 31) + letter.charCodeAt(0)) >>> 0, 0);
-  const tone = ((hash ^ (hash >>> 16)) >>> 0) % tones.length;
-  const letters = initials || name.trim().split(/\s+/).slice(0, 2).map(word => word[0]).join(' ');
-  return <span className={`recipient-initials avatar-${tones[tone]}`} aria-hidden="true">{letters}</span>;
+  return `/assets/avatars/avtr0${((hash ^ (hash >>> 16)) % 7) + 1}.svg`;
+}
+export function RecipientAvatar({ name, src }: { name: string; src?: string }) {
+  return <img className="recipient-avatar" src={src || avatarForName(name)} alt="" aria-hidden="true" />;
 }

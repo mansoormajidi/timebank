@@ -26,7 +26,7 @@ function getSnapshot(): Activity[] {
     if (raw !== lastRaw) {
       lastRaw = raw;
       const data: unknown = raw ? JSON.parse(raw) : [];
-      const valid = Array.isArray(data) ? data.filter(isActivity).slice(0, 60) : [];
+      const valid = Array.isArray(data) ? data.filter(isActivity).filter(item => item.id !== 'new-card').slice(0, 60) : [];
       cached = valid.length ? valid : seedActivities;
     }
   } catch { /* Keep the in-memory ledger if storage is unavailable. */ }

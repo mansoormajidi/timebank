@@ -4,6 +4,7 @@ import { getCardOtp, getServerCardOtp, isValidCardOtp, subscribeCardOtp } from '
 import { persianDigits } from '../lib/forms';
 import type { ActivityEvent } from '../lib/activity';
 import { Icon } from './Icon';
+import { ActionButton } from './ui/ActionButton';
 
 export function CardOtpPanel({ onComplete }: { onComplete: (event: ActivityEvent) => void }) {
   const otp = useSyncExternalStore(subscribeCardOtp, getCardOtp, getServerCardOtp);
@@ -23,7 +24,7 @@ export function CardOtpPanel({ onComplete }: { onComplete: (event: ActivityEvent
     <div className="card-otp-code" dir="ltr" aria-label="رمز دوم پویا">{otp ? persianDigits(otp.code) : '••••••'}</div>
     <div className="card-otp-timer"><span>صدور رمز جدید تا</span><strong dir="ltr">۰۰:{persianDigits(String(otp?.seconds ?? 30).padStart(2, '0'))}</strong></div>
     <div className="card-otp-progress" role="progressbar" aria-label="اعتبار رمز پویا" aria-valuemin={0} aria-valuemax={30} aria-valuenow={otp?.seconds ?? 30}><span style={{ width: `${(otp?.seconds ?? 30) / 30 * 100}%` }} /></div>
-    <button className="primary-button otp-copy-button" disabled={!otp} onClick={copy}><Icon name="copy" size={20} />{copiedCode && copiedCode === otp?.code ? 'رمز پویا کپی شد' : 'کپی رمز پویا'}</button>
+    <ActionButton shape="pill" className="primary-button otp-copy-button" disabled={!otp} onClick={copy} leading={<Icon name="copy" size={20} />}>{copiedCode && copiedCode === otp?.code ? 'رمز پویا کپی شد' : 'کپی رمز پویا'}</ActionButton>
     <p className="otp-copy-status" role="status">{copiedCode && copiedCode === otp?.code ? 'رمز برای استفاده در انتقال نمایشی کپی شد.' : ''}</p>
     {error && <p role="alert" className="camera-error">{error}</p>}
     <p className="sheet-note">رمز هر ۳۰ ثانیه عوض می‌شود. فقط در همین پروتوتایپ اعتبار دارد.</p>

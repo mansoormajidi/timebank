@@ -14,7 +14,6 @@ export const services: { id: string; title: string; icon: IconName; description:
   { id: 'lease', title: 'اجاره‌نامه', icon: 'lease', description: 'مشاهده و پیگیری قراردادهای املاک موقوفه' },
 ];
 export const activities: { id: string; title: string; subtitle: string; value: string; icon: IconName; pending?: boolean }[] = [
-  { id: 'new-card', title: 'صدور کارت جدید', subtitle: 'کد پیگیری ۵۳۴۵۷۹', value: 'در حال بررسی', icon: 'card', pending: true },
   { id: 'donation', title: 'کمک به امام‌زاده عبدالله', subtitle: 'امروز، ۱۰:۳۵', value: '۲۵۰٬۰۰۰٬۰۰۰ ریال', icon: 'receipt' },
   { id: 'hold', title: 'مسدودی مبلغ', subtitle: 'حساب خرج روزمره', value: '۱۲٬۰۰۰٬۰۰۰ ریال', icon: 'blocked' },
 ];
