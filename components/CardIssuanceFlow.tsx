@@ -61,11 +61,12 @@ function CardSelector({ selected, onSelect }: { selected: IssuedCardId; onSelect
   </div>;
 }
 
-export function CardIssuanceFlow({ issuance, onRequest, onActivate, onComplete, onClose }: {
+export function CardIssuanceFlow({ issuance, onRequest, onActivate, onComplete, onRequested, onClose }: {
   issuance: CardIssuanceState;
   onRequest: (cardId: IssuedCardId, address: string) => CardIssuanceState;
   onActivate: () => CardIssuanceState;
   onComplete: (event: ActivityEvent) => void;
+  onRequested?: () => void;
   onClose: () => void;
 }) {
   const [step, setStep] = useState<Step>(issuance.status === 'tracking' ? 'tracking' : issuance.status === 'active' ? 'active' : 'select');
@@ -92,7 +93,7 @@ export function CardIssuanceFlow({ issuance, onRequest, onActivate, onComplete, 
     setAddressError('');
     const saved = onRequest(selected, addressMode === 'default' ? address : `${address}، کد پستی ${postalCode}`);
     onComplete({ id: 'card-issuance-request', title: 'درخواست صدور کارت جدید', value: 'در حال آماده‌سازی', icon: 'card', pending: true, details: [['نوع کارت', cardChoices.find(item => item.id === selected)?.title || 'کارت تایم‌بانک'], ['کد پیگیری', saved.trackingCode], ['نشانی ارسال', saved.address]] });
-    setStep('tracking');
+    if (onRequested) onRequested(); else setStep('tracking');
   }
   function activate() {
     if (otp !== DEMO_OTP) { setOtpError('کد آزمایشی ۱۲۳۴۵۶ را وارد کنید.'); return; }

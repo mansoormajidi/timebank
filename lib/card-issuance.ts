@@ -19,11 +19,15 @@ export const cardChoices: { id: IssuedCardId; title: string; caption: string; nu
   { id: 'silver', title: 'کارت نقره‌ای', caption: 'طراحی مدرن و خنثی', number: '۶۴۶۳ ۶۴۸۶ ۰۶۳۹ ۲۴۸۵', image: '/assets/cards/card-silver.png' },
 ];
 
-const STORAGE_KEY = 'timebank-card-issuance-v1';
+const STORAGE_KEY_PREFIX = 'timebank-card-issuance-v3';
 const initialState: CardIssuanceState = { status: 'none', cardId: 'bronze', address: '', trackingCode: '', updatedAt: '' };
-const listeners = new Set<() => void>();
-let cachedRaw: string | null | undefined;
-let cachedState = initialState;
+const listeners = new Map<string, Set<() => void>>();
+const cachedRaw = new Map<string, string | null>();
+const cachedState = new Map<string, CardIssuanceState>();
+
+function storageKey(userId: string) {
+  return `${STORAGE_KEY_PREFIX}:${userId || 'signed-out'}`;
+}
 
 function isState(value: unknown): value is CardIssuanceState {
   if (!value || typeof value !== 'object') return false;
@@ -35,37 +39,47 @@ function isState(value: unknown): value is CardIssuanceState {
     && typeof state.updatedAt === 'string' && state.updatedAt.length < 100;
 }
 
-function getSnapshot() {
+function getSnapshot(key: string) {
   if (typeof window === 'undefined') return initialState;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw !== cachedRaw) {
-      cachedRaw = raw;
+    const raw = localStorage.getItem(key);
+    if (raw !== cachedRaw.get(key)) {
+      cachedRaw.set(key, raw);
       const parsed: unknown = raw ? JSON.parse(raw) : initialState;
-      cachedState = isState(parsed) ? parsed : initialState;
+      cachedState.set(key, isState(parsed) ? parsed : initialState);
     }
   } catch { /* Keep the last valid in-memory state. */ }
-  return cachedState;
+  return cachedState.get(key) || initialState;
 }
 
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  const onStorage = (event: StorageEvent) => { if (event.key === STORAGE_KEY || event.key === null) listener(); };
+function subscribe(key: string, listener: () => void) {
+  const keyListeners = listeners.get(key) || new Set<() => void>();
+  keyListeners.add(listener);
+  listeners.set(key, keyListeners);
+  const onStorage = (event: StorageEvent) => { if (event.key === key || event.key === null) listener(); };
   window.addEventListener('storage', onStorage);
-  return () => { listeners.delete(listener); window.removeEventListener('storage', onStorage); };
+  return () => {
+    keyListeners.delete(listener);
+    if (!keyListeners.size) listeners.delete(key);
+    window.removeEventListener('storage', onStorage);
+  };
 }
 
-function save(next: CardIssuanceState) {
-  cachedState = next;
+function save(key: string, next: CardIssuanceState) {
+  cachedState.set(key, next);
   try {
-    cachedRaw = JSON.stringify(next);
-    localStorage.setItem(STORAGE_KEY, cachedRaw);
+    const raw = JSON.stringify(next);
+    cachedRaw.set(key, raw);
+    localStorage.setItem(key, raw);
   } catch { /* State remains available for this browser session. */ }
-  listeners.forEach(listener => listener());
+  listeners.get(key)?.forEach(listener => listener());
 }
 
-export function useCardIssuance() {
-  const state = useSyncExternalStore(subscribe, getSnapshot, () => initialState);
+export function useCardIssuance(userId: string) {
+  const key = storageKey(userId);
+  const subscribeToUser = useCallback((listener: () => void) => subscribe(key, listener), [key]);
+  const getUserSnapshot = useCallback(() => getSnapshot(key), [key]);
+  const state = useSyncExternalStore(subscribeToUser, getUserSnapshot, () => initialState);
   const requestCard = useCallback((cardId: IssuedCardId, address: string) => {
     const next: CardIssuanceState = {
       status: 'tracking',
@@ -74,15 +88,15 @@ export function useCardIssuance() {
       trackingCode: '۵۳۴۵۷۹',
       updatedAt: new Date().toLocaleString('fa-IR'),
     };
-    save(next);
+    save(key, next);
     return next;
-  }, []);
+  }, [key]);
   const activateCard = useCallback(() => {
-    const current = getSnapshot();
+    const current = getSnapshot(key);
     if (current.status !== 'tracking') return current;
     const next = { ...current, status: 'active' as const, updatedAt: new Date().toLocaleString('fa-IR') };
-    save(next);
+    save(key, next);
     return next;
-  }, []);
+  }, [key]);
   return { state, requestCard, activateCard };
 }

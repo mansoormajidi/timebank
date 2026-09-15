@@ -1,56 +1,89 @@
 'use client';
 import { useState } from 'react';
 import { AnimatePresence } from 'motion/react';
-import { FlowShell } from './FlowShell';
+import { BottomSheet } from './BottomSheet';
 import { MaterialField } from './MaterialField';
 import { OtpField } from './OtpField';
-import { BottomSheet } from './BottomSheet';
 import { SplashScreen } from './SplashScreen';
-import { BirthDatePicker } from './BirthDatePicker';
-import { AuthAnimation } from './AuthAnimation';
-import { SuccessAnimation } from './SuccessAnimation';
-import { CameraCapture } from './CameraCapture';
 import { ActionButton } from './ui/ActionButton';
-import { DEMO_OTP, digits, latinDigits, passwordRules } from '../lib/forms';
-type Mode = 'login' | 'signup';
-type LoginStep = 'form' | 'otp' | 'password' | 'quick';
-type SignupStep = 'form' | 'otp' | 'password' | 'identity' | 'card' | 'cardDetails' | 'videoGuide' | 'video' | 'success';
-const loginOrder: LoginStep[] = ['form', 'otp', 'password', 'quick'];
-const signupOrder: SignupStep[] = ['form', 'otp', 'password', 'identity', 'card', 'cardDetails', 'videoGuide', 'video', 'success'];
-function FlowButton({ children, onClick, disabled, secondary = false, type = 'button' }: { children: React.ReactNode; onClick?: () => void; disabled?: boolean; secondary?: boolean; type?: 'button'|'submit' }) { return <ActionButton type={type} variant={secondary ? 'secondary' : 'primary'} className={secondary ? 'flow-button secondary' : 'flow-button'} onClick={onClick} disabled={disabled}>{children}</ActionButton>; }
-export function AuthFlow({ initialMode, onClose, playSplash = false }: { initialMode: Mode; onClose: () => void; playSplash?: boolean }) {
-  const [splashDone,setSplashDone] = useState(!playSplash);
-  const [mode, setMode] = useState<Mode>(initialMode);
-  const [loginStep, setLoginStep] = useState<LoginStep>('form');
-  const [signupStep, setSignupStep] = useState<SignupStep>('form');
-  const step = mode === 'login' ? loginStep : signupStep;
-  const [recover, setRecover] = useState(false);
-  const [photo, setPhoto] = useState(''); const [serial, setSerial] = useState(''); const [birthday, setBirthday] = useState(''); const [noCard, setNoCard] = useState(false); const [quickEnabled, setQuickEnabled] = useState(false);
-  const [nationalId, setNationalId] = useState(''); const [mobile, setMobile] = useState(''); const [password, setPassword] = useState(''); const [repeat, setRepeat] = useState(''); const [otp, setOtp] = useState(''); const [errors, setErrors] = useState<Record<string,string>>({});
-  function switchMode(next: Mode) { setMode(next); setRecover(false); setPassword(''); setRepeat(''); setPhoto(''); setErrors({}); setOtp(''); if (next === 'login') setLoginStep('form'); else setSignupStep('form'); }
-  function back() { const order = mode === 'login' ? loginOrder : signupOrder; const current = order.indexOf(step as never); if (current <= 0) { switchMode('login'); return; } if (mode === 'login' && step === 'quick' && !recover) { setLoginStep('otp'); return; } mode === 'login' ? setLoginStep(loginOrder[current-1]) : setSignupStep(signupOrder[current-1]); setErrors({}); }
-  function validateIdentity(next: () => void, needsMobile: boolean) { const e: Record<string,string> = {}; if (digits(nationalId).length !== 10) e.nationalId = 'کد ملی باید ۱۰ رقم باشد.'; if (!needsMobile && password.length < 8) e.password = 'کلمه عبور آزمایشی را وارد کنید؛ حداقل ۸ کاراکتر.'; if (needsMobile && !/^09\d{9}$/.test(digits(mobile))) e.mobile = 'شماره موبایل معتبر وارد کنید.'; setErrors(e); if (!Object.keys(e).length) next(); }
-  function validateOtp(next: () => void) { if (otp !== DEMO_OTP) setErrors({ otp: 'کد آزمایشی ۱۲۳۴۵۶ را وارد کنید.' }); else { setErrors({}); next(); } }
-  function content() {
-    if (step === 'form') return <form className="flow-form" onSubmit={e => { e.preventDefault(); validateIdentity(() => mode === 'login' ? setLoginStep('otp') : setSignupStep('otp'), mode === 'signup' || recover); }}>
-      <MaterialField label="کد ملی" value={nationalId} inputMode="numeric" autoComplete="username" maxLength={10} dir="ltr" leading={<img src="/assets/kodemelli.svg" alt="" />} error={errors.nationalId} onChange={e => setNationalId(digits(e.target.value))} />
-      {mode === 'signup' || recover ? <MaterialField label="شماره موبایل" value={mobile} inputMode="tel" autoComplete="tel" maxLength={11} dir="ltr" error={errors.mobile} hint="شماره موبایل باید به نام صاحب کد ملی باشد." onChange={e => setMobile(digits(e.target.value))} /> : <MaterialField label="کلمه عبور" value={password} type="password" leading={<img src="/assets/password.svg" alt="" />} autoComplete="current-password" error={errors.password} onChange={e => setPassword(latinDigits(e.target.value))} />}
-      <button type="button" className="demo-fill" onClick={() => { setNationalId('1234567890'); setMobile('09120000000'); setPassword('Time1234'); setErrors({}); }}>استفاده از اطلاعات آزمایشی</button><FlowButton type="submit">ادامه</FlowButton>{mode === 'login' && <button type="button" className="text-button standalone" onClick={() => { setRecover(!recover); setErrors({}); }}>{recover ? 'ورود با کلمه عبور' : 'فراموشی رمز'}</button>}<button type="button" className="switch-auth" onClick={() => switchMode(mode === 'login' ? 'signup' : 'login')}>{mode === 'login' ? 'حساب ندارید؟ ثبت‌نام کنید' : 'حساب کاربری دارید؟ وارد شوید'}</button>
-    </form>;
-    if (step === 'otp') return <div className="flow-form"><OtpField value={otp} onChange={setOtp} error={errors.otp} /><FlowButton onClick={() => validateOtp(() => mode === 'login' ? setLoginStep(recover ? 'password' : 'quick') : setSignupStep('password'))}>بررسی و ارسال کد</FlowButton></div>;
-    if (step === 'password') { const rules = passwordRules(password, repeat); return <div className="flow-form"><MaterialField label="رمز عبور" value={password} type="password" leading={<img src="/assets/password.svg" alt="" />} autoComplete="new-password" onChange={e => setPassword(latinDigits(e.target.value))} /><MaterialField label="تکرار رمز عبور" value={repeat} type="password" leading={<img src="/assets/password.svg" alt="" />} autoComplete="new-password" onChange={e => setRepeat(latinDigits(e.target.value))} /><div className="password-rules"><strong>شرایط رمز عبور</strong>{['حداقل ۸ کاراکتر','شامل عدد','شامل حرف','رمزها باید یکسان باشد'].map((r,i)=><span key={r} className={rules[i]?'passed':''}><i>{rules[i]?'✓':''}</i>{r}</span>)}</div><FlowButton disabled={!rules.every(Boolean)} onClick={() => mode === 'signup' ? setSignupStep('identity') : setLoginStep('quick')}>تأیید و ادامه</FlowButton></div>; }
-    if (step === 'identity') return <div className="identity-overview"><img src="/assets/auth-identity.svg" alt="" /><div className="identity-card"><span className="service-icon"><img src="/assets/hoviati.svg" width="24" height="24" alt="" /></span><span><strong>اطلاعات هویتی</strong><small>تصویر پشت کارت ملی</small></span></div><div className="identity-card"><span className="service-icon"><img src="/assets/selfie.svg" width="24" height="24" alt="" /></span><span><strong>ویدیوی سلفی</strong><small>جلوی دوربین یک متن را بخوانید</small></span></div><FlowButton onClick={() => setSignupStep('card')}>شروع احراز هویت</FlowButton></div>;
-    if (step === 'card') return <><div className="capture-copy"><b>مرحله ۱ از ۲</b><p>پشت کارت ملی را در کادر بگیرید. تصویر در همین مرورگر می‌ماند.</p></div><CameraCapture key={step} kind="photo" onSkip={() => { setNoCard(true); setSerial(''); setSignupStep('cardDetails'); }} onDone={url => { setPhoto(url); setSerial('1G234245'); setNoCard(false); setSignupStep('cardDetails'); }} /></>;
-    if (step === 'cardDetails') return <div className="flow-form"><p className="sheet-description">{noCard ? 'کد رهگیری رسید کارت ملی را وارد کنید.' : 'سریال خوانده‌شده را بررسی کنید؛ در صورت نیاز می‌توانید آن را تغییر دهید.'}</p><MaterialField label={noCard ? 'کد رهگیری کارت ملی' : 'سریال پشت کارت ملی'} value={serial} dir="ltr" maxLength={24} error={errors.serial} onChange={e => setSerial(latinDigits(e.target.value).toUpperCase())} /><BirthDatePicker value={birthday} onChange={setBirthday} error={errors.birthday} /><div className="button-stack"><FlowButton onClick={() => { const e: Record<string,string> = {}; if (serial.trim().length < 6) e.serial = 'حداقل ۶ کاراکتر وارد کنید.'; if (digits(birthday).length !== 8) e.birthday = 'تاریخ را به‌صورت سال/ماه/روز وارد کنید.'; setErrors(e); if (!Object.keys(e).length) setSignupStep('videoGuide'); }}>تأیید و ادامه</FlowButton>{!noCard && <FlowButton secondary onClick={() => setSignupStep('card')}>گرفتن دوبارهٔ عکس</FlowButton>}</div></div>;
-    if (step === 'videoGuide') return <div className="identity-overview video-guide"><AuthAnimation kind="face-id" />{[['نور کافی','محیط روشن و بدون نور پشت سر','noor'],['چهره کامل در کادر','تمام صورت داخل کادر نمایش داده شود','chehre'],['بدون ماسک و عینک','پوشش رایج مانعی ندارد','mask'],['محیط آرام','بدون صدای مزاحم','aram']].map(([title,caption,icon]) => <div className="identity-card" key={title}><span className="service-icon"><img src={`/assets/${icon}.svg`} width="40" height="40" alt="" /></span><span><strong>{title}</strong><small>{caption}</small></span></div>)}<FlowButton onClick={() => setSignupStep('video')}>شروع احراز هویت ویدیویی</FlowButton></div>;
-    if (step === 'video') return <><div className="capture-copy"><b>مرحله ۲ از ۲</b><p>در ویدیوی سلفی با صدای بلند بخوانید:</p><blockquote>«نگاه به آسمان آبی در ارتفاعات بلند کوه‌های سبلان»</blockquote></div><CameraCapture key={step} kind="video" onDone={() => setSignupStep('success')} /></>;
-    if (step === 'quick') return <div className="success-panel quick-entry"><AuthAnimation kind="biometric" /><p>{quickEnabled ? 'تنظیم ورود سریع به‌صورت نمایشی فعال شد.' : 'با اثر انگشت یا تشخیص چهره، دفعه‌های بعد سریع‌تر وارد شوید.'}</p><p className="sheet-note">در این پروتوتایپ فقط ظاهر تنظیم نمایش داده می‌شود؛ دادهٔ بیومتریک دریافت نمی‌شود.</p><div className="button-stack"><FlowButton secondary onClick={() => setQuickEnabled(!quickEnabled)}>{quickEnabled ? 'غیرفعال‌سازی نمایشی' : 'فعال‌سازی نمایشی'}</FlowButton><FlowButton onClick={onClose}>ورود به صفحه اصلی</FlowButton></div></div>;
-    return <div className="success-panel"><SuccessAnimation /><h2>احراز هویت با موفقیت انجام شد</h2><p>فایل‌ها ارسال نشدند؛ این تأیید صرفاً نمایشی است. اکنون می‌توانید وارد تایم‌بانک شوید.</p><FlowButton onClick={onClose}>ورود به تایم‌بانک</FlowButton></div>;
+import { DEMO_OTP, digits, persianDigits } from '../lib/forms';
+import { findPrototypeMobile, registerPrototypeUser } from '../lib/auth-directory';
+
+type Step = 'nationalId' | 'mobile' | 'otp';
+
+function maskMobile(value: string) {
+  const normalized = digits(value);
+  if (normalized.length !== 11) return 'شماره همراه شما';
+  return persianDigits(`${normalized.slice(0, 4)}***${normalized.slice(-4)}`);
+}
+
+export type AuthenticatedUser = { nationalId: string; mobile: string; isNew: boolean };
+
+export function AuthFlow({ onClose, playSplash = false }: { initialMode?: 'login' | 'signup'; onClose: (user: AuthenticatedUser) => void; playSplash?: boolean }) {
+  const [splashDone, setSplashDone] = useState(!playSplash);
+  const [step, setStep] = useState<Step>('nationalId');
+  const [nationalId, setNationalId] = useState('');
+  const [mobile, setMobile] = useState('');
+  const [resolvedMobile, setResolvedMobile] = useState('');
+  const [existingUser, setExistingUser] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  function submitNationalId() {
+    const normalized = digits(nationalId);
+    if (normalized.length !== 10) { setErrors({ nationalId: 'کد ملی باید ۱۰ رقم باشد.' }); return; }
+    const knownMobile = findPrototypeMobile(normalized);
+    setErrors({});
+    if (knownMobile) {
+      setExistingUser(true);
+      setResolvedMobile(knownMobile);
+      setStep('otp');
+    } else {
+      setExistingUser(false);
+      setStep('mobile');
+    }
   }
-  const title = step === 'form' ? (mode === 'login' ? (recover ? 'بازیابی رمز عبور' : 'ورود به تایم‌بانک') : 'شروع ثبت‌نام') : step === 'otp' ? 'کد تأیید را وارد کنید' : step === 'password' ? 'رمز عبور بسازید' : step === 'identity' ? 'احراز هویت' : step === 'cardDetails' ? 'تأیید اطلاعات هویتی' : step === 'videoGuide' ? 'راهنمای ویدیوی سلفی' : step === 'card' ? 'تصویر پشت کارت ملی' : step === 'video' ? 'احراز ویدیویی' : step === 'quick' ? 'خوش آمدید' : 'ثبت‌نام کامل شد';
-  const subtitle = step === 'form' ? (mode === 'login' && !recover ? 'کد ملی و کلمه عبور خود را وارد کنید.' : 'کد ملی و شماره موبایل خود را وارد کنید.') : step === 'otp' ? 'کد ۶ رقمی به شماره ۰۹۱۲***۴۰۸۰ ارسال شد.' : step === 'password' ? 'یک رمز عبور امن برای ورود انتخاب کنید.' : step === 'identity' ? 'برای فعال‌سازی لازم است هویت شما را بررسی کنیم.' : undefined;
-  const sheetStep = step === 'form' || step === 'otp' || step === 'quick';
-  if (sheetStep) return <div className="auth-splash-stage"><div inert={splashDone}><SplashScreen animateEntrance={playSplash && !splashDone} onFinished={() => setSplashDone(true)} /></div><AnimatePresence>{splashDone && <BottomSheet key="authentication-sheet" className={`auth-sheet ${step === 'otp' ? 'auth-otp-sheet' : ''}`} title={step === 'quick' ? 'ورود سریع را فعال کنید' : title} subtitle={subtitle} onBack={step !== 'form' ? back : undefined}><div key={`${mode}-${step}`}>{content()}</div></BottomSheet>}</AnimatePresence></div>;
-  if (step === 'cardDetails') return <div className="auth-document-stage"><div inert><FlowShell title="تصویر پشت کارت ملی" subtitle="بارکد را در محدوده مشخص قرار دهید" stepKey="captured" onBack={back} onClose={back}><div className="camera-frame">{photo && <img src={photo} alt="عکس ثبت‌شدهٔ پشت کارت" />}</div></FlowShell></div><BottomSheet title={noCard ? 'کد رهگیری کارت ملی' : 'سریال پشت کارت ملی تأیید است؟'} onBack={back} className="auth-sheet">{content()}</BottomSheet></div>;
-  return <FlowShell variant={step === 'success' ? 'auth-full-page auth-success' : 'auth-full-page'} title={title} subtitle={subtitle} stepKey={`${mode}-${step}`} onBack={back} onClose={back}>{content()}</FlowShell>;
+
+  function submitMobile() {
+    const normalized = digits(mobile);
+    if (!/^09\d{9}$/.test(normalized)) { setErrors({ mobile: 'شماره موبایل معتبر وارد کنید.' }); return; }
+    setResolvedMobile(normalized);
+    setErrors({});
+    setStep('otp');
+  }
+
+  function submitOtp() {
+    if (digits(otp) !== DEMO_OTP) { setErrors({ otp: 'کد آزمایشی ۱۲۳۴۵۶ را وارد کنید.' }); return; }
+    const normalizedNationalId = digits(nationalId);
+    if (!existingUser) registerPrototypeUser(normalizedNationalId, resolvedMobile);
+    setErrors({});
+    onClose({ nationalId: normalizedNationalId, mobile: resolvedMobile, isNew: !existingUser });
+  }
+
+  function back() {
+    setErrors({});
+    setOtp('');
+    if (step === 'otp') setStep(existingUser ? 'nationalId' : 'mobile');
+    else setStep('nationalId');
+  }
+
+  const title = step === 'nationalId' ? 'ورود به تایم‌بانک' : step === 'mobile' ? 'شماره همراه شما' : 'کد تأیید را وارد کنید';
+  const subtitle = step === 'nationalId'
+    ? 'برای ورود یا ساخت حساب، کد ملی خود را وارد کنید.'
+    : step === 'mobile'
+      ? 'این کد ملی هنوز در تایم‌بانک ثبت نشده است. شماره موبایل متعلق به خودتان را وارد کنید.'
+      : `کد ۶ رقمی به ${maskMobile(resolvedMobile)} ارسال شد.`;
+
+  const content = step === 'nationalId' ? <form className="flow-form" onSubmit={event => { event.preventDefault(); submitNationalId(); }}>
+    <MaterialField label="کد ملی" value={nationalId} inputMode="numeric" autoComplete="username" maxLength={10} dir="ltr" leading={<img src="/assets/kodemelli.svg" alt="" />} error={errors.nationalId} onChange={event => { setNationalId(digits(event.target.value)); setErrors({}); }} />
+    <button type="button" className="demo-fill" onClick={() => { setNationalId('1234567890'); setErrors({}); }}>درج کد ملی کاربر آزمایشی</button>
+    <ActionButton type="submit" className="flow-button">ادامه</ActionButton>
+  </form> : step === 'mobile' ? <form className="flow-form" onSubmit={event => { event.preventDefault(); submitMobile(); }}>
+    <div className="auth-identity-chip"><span>کد ملی</span><strong dir="ltr">{persianDigits(nationalId)}</strong></div>
+    <MaterialField label="شماره موبایل" value={mobile} inputMode="tel" autoComplete="tel" maxLength={11} dir="ltr" error={errors.mobile} hint="شماره موبایل باید به نام صاحب کد ملی باشد." onChange={event => { setMobile(digits(event.target.value)); setErrors({}); }} />
+    <button type="button" className="demo-fill" onClick={() => { setMobile('09120000000'); setErrors({}); }}>درج شماره آزمایشی</button>
+    <ActionButton type="submit" className="flow-button">ارسال کد تأیید</ActionButton>
+  </form> : <div className="flow-form"><OtpField value={otp} onChange={value => { setOtp(value); setErrors({}); }} error={errors.otp} /><ActionButton className="flow-button" onClick={submitOtp}>{existingUser ? 'ورود به تایم‌بانک' : 'تأیید و ساخت حساب'}</ActionButton></div>;
+
+  return <div className="auth-splash-stage"><div inert={splashDone}><SplashScreen animateEntrance={playSplash && !splashDone} onFinished={() => setSplashDone(true)} /></div><AnimatePresence>{splashDone && <BottomSheet key={`authentication-${step}`} className={`auth-sheet ${step === 'otp' ? 'auth-otp-sheet' : ''}`} title={title} subtitle={subtitle} onBack={step !== 'nationalId' ? back : undefined}><div key={step}>{content}</div></BottomSheet>}</AnimatePresence></div>;
 }

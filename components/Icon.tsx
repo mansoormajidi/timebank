@@ -5,7 +5,9 @@ export const icons = {
   statement: 'imgFileText', transfer: 'imgVector', close: 'imgX', chevron: 'imgChevronLeft1',
   lease: 'ejare', mosque: 'imgMosque', receipt: 'qabz', card: 'imgCreditCard',
   blocked: 'imgProhibitInset', auction: 'imgCoinVertical', chair: 'imgOfficeChair',
-  services: 'khadamat', rial: 'rial', copy: 'copy', accounts: 'imgCardholder', home: 'imgGroup2', logo: 'imgGroup1',
+  services: 'service-grid', assistant: 'service-assistant', support: 'service-support',
+  gold: 'service-gold', token: 'service-token', timeFund: 'service-time-fund', funding: 'service-funding',
+  rial: 'rial', copy: 'copy', accounts: 'imgCardholder', home: 'imgGroup2', logo: 'imgGroup1',
 } as const;
 export type IconName = keyof typeof icons;
 export function Icon({ name, size = 24, className = '' }: { name: IconName; size?: number; className?: string }) {

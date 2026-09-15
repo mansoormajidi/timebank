@@ -33,12 +33,12 @@ const seed: Transaction[] = [
 ];
 
 function activityTransactions(activities: Activity[]): Transaction[] {
-  return activities.filter(item => item.title === 'افزایش موجودی').map((item, index) => ({
+  return activities.filter(item => item.title === 'کوک کردن حساب' || item.title === 'افزایش موجودی').map((item, index) => ({
     id: `activity-${item.id}`,
     at: new Date(Date.now() - index * 1000).toISOString(),
-    title: 'افزایش موجودی',
+    title: 'کوک کردن حساب',
     counterparty: 'درگاه پرداخت اینترنتی',
-    detail: 'واریز به حساب هزینه‌های روزمره',
+    detail: 'واریز به حساب نبض زمان و خرج',
     amount: Number(item.value.replace(/[^\d]/g, '')) || 0,
     direction: 'credit',
     status: 'success',
@@ -99,13 +99,13 @@ export function StatementView({ activities, hidden }: { activities: Activity[]; 
     const csv = '\ufeff' + rows.map(row => row.map(cell => `"${cell.replaceAll('"', '""')}"`).join(',')).join('\n');
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
     const link = document.createElement('a'); link.href = url; link.download = 'timebank-statement.csv'; link.click(); URL.revokeObjectURL(url);
-    setNotice('خروجی CSV صورتحساب آماده شد.');
+    setNotice('خروجی CSV ردپای مالی آماده شد.');
   }
 
   return <div className="statement-view">
     <section className="statement-balance">
       <div><small>مانده فعلی</small><strong>{hidden ? '•••٬•••٬•••' : '۲۴۸٬۵۶۰٬۰۰۰'} <em>ریال</em></strong></div>
-      <button onClick={exportCsv} aria-label="دریافت خروجی صورتحساب"><span>⇩</span> دریافت خروجی</button>
+      <button onClick={exportCsv} aria-label="دریافت خروجی ردپای مالی"><span>⇩</span> دریافت خروجی</button>
     </section>
 
     <label className="statement-search"><span>⌕</span><input value={query} onChange={event => setQuery(event.target.value)} placeholder="جست‌وجوی نام، شرح یا شماره پیگیری" /></label>
@@ -136,7 +136,7 @@ export function StatementView({ activities, hidden }: { activities: Activity[]; 
         {selected === item.id && <dl className="transaction-details"><div><dt>طرف انتقال</dt><dd>{item.counterparty}</dd></div><div><dt>شرح</dt><dd>{item.detail}</dd></div><div><dt>شماره پیگیری</dt><dd>{item.reference}</dd></div><div><dt>زمان دقیق</dt><dd>{faDate(item.at)}، {faTime(item.at)}</dd></div></dl>}
       </article>)}
     </section>)}
-    <p className="statement-disclaimer">اطلاعات این صورتحساب نمایشی است و اعتبار بانکی ندارد.</p>
+    <p className="statement-disclaimer">اطلاعات این ردپای مالی نمایشی است و اعتبار بانکی ندارد.</p>
     <div className="sr-only" role="status">{notice}</div>
   </div>;
 }

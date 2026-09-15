@@ -1,7 +1,7 @@
 import { latinDigits } from './forms';
 export type DestinationKind = 'card' | 'iban' | 'account';
 export const sourceAccounts = [
-  { id: 'daily', title: 'هزینه‌های روزمره', number: '0108274567001', card: '6219675489475376', balance: 248560000 },
+  { id: 'daily', title: 'نبض زمان و خرج', number: '0108274567001', card: '6219675489475376', balance: 248560000 },
   { id: 'saving', title: 'پس‌انداز', number: '0108274567002', card: '6219675489475311', balance: 1250000000 },
 ];
 export const recipients: { id: string; name: string; value: string; kind: DestinationKind; avatar: string }[] = [
