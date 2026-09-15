@@ -12,7 +12,7 @@ import { ActionButton } from './ui/ActionButton';
 
 export const detailTitles: Record<string, string> = {
   'card-block': 'مسدودی کارت', 'card-password': 'رمز دوم پویا', 'giving-start': 'انجام کار خوب', 'endowment-start': 'انجام کار ماندگار', 'banking-locked': 'فعال‌سازی خدمات بانکی', profile: 'حساب کاربری', notifications: 'اعلان‌ها', report: 'کنترل مسیر', numbers: 'شناسه‌ها',
-  services: 'کل خدمات تایم‌بانک', card: 'جزئیات گرین‌کارت', invite: 'دعوت از دوستان', giving: 'کار خوب', endowment: 'کار ماندگار',
+  services: 'خدمات تایم‌بانک', card: 'جزئیات گرین‌کارت', invite: 'دعوت از دوستان', giving: 'کار خوب', endowment: 'کار ماندگار',
   activity: 'همه فعالیت‌ها', accounts: 'حساب‌ها', transfer: 'جابه‌جایی', statement: 'ردپای مالی', topup: 'کوک کردن حساب',
   'profile-about': 'درباره تایم‌بانک', 'profile-version': 'ورژن اپ', 'profile-devices': 'دستگاه‌های متصل', 'profile-avatar': 'ویرایش تصویر پروفایل',
   bill: 'پرداخت قبض', funding: 'تأمین مالی', 'gold-fund': 'صندوق طلا', token: 'توکن', 'time-fund': 'صندوق زمان', shrines: 'امام‌زاده‌ها', lease: 'اجاره‌نامه', auction: 'شرکت در مزایده', welfare: 'خدمات رفاهی زائرین',

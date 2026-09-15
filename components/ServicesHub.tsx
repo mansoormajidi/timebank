@@ -7,7 +7,7 @@ import { Icon } from './Icon';
 import { IranPlate, initialPlate, plateKindLabel, type PlateValue } from './IranPlate';
 import { ActionButton } from './ui/ActionButton';
 
-type GlyphName = 'car' | 'fine' | 'road' | 'license' | 'plate' | 'insurance' | 'check' | 'passport' | 'exit' | 'identity' | 'tax' | 'postal' | 'sim' | 'motor';
+type GlyphName = 'car' | 'fine' | 'road' | 'license' | 'plate' | 'insurance' | 'check' | 'passport' | 'exit' | 'identity' | 'tax' | 'postal' | 'sim' | 'motor' | 'bill' | 'passport-state';
 type ServiceItem = { id: string; title: string; description: string; icon: GlyphName };
 
 const vehicleServices: ServiceItem[] = [
@@ -21,7 +21,7 @@ const vehicleServices: ServiceItem[] = [
 
 const inquiryServices: ServiceItem[] = [
   { id: 'returned-check', title: 'چک برگشتی', description: 'استعلام وضعیت چک‌های برگشتی ثبت‌شده', icon: 'check' },
-  { id: 'passport-state', title: 'وضعیت گذرنامه', description: 'پیگیری آخرین وضعیت صدور یا تمدید گذرنامه', icon: 'passport' },
+  { id: 'passport-state', title: 'وضعیت گذرنامه', description: 'پیگیری آخرین وضعیت صدور یا تمدید گذرنامه', icon: 'passport-state' },
   { id: 'exit-status', title: 'خروج از کشور', description: 'استعلام وضعیت مجوز و بدهی خروج از کشور', icon: 'exit' },
   { id: 'passport-services', title: 'پاسپورت', description: 'دسترسی به خدمات عمومی مرتبط با پاسپورت', icon: 'passport' },
 ];
@@ -34,6 +34,8 @@ const commonServices: ServiceItem[] = [
 ];
 
 function ServiceGlyph({ name }: { name: GlyphName }) {
+  const imageNames: Partial<Record<GlyphName, string>> = { check: 'check', bill: 'bill', 'passport-state': 'passport-state', car: 'car', exit: 'exit', tax: 'tax', motor: 'motor', passport: 'passport', postal: 'postal', sim: 'sim' };
+  if (imageNames[name]) return <img className="service-artwork" src={`/icons/services/${imageNames[name]}.jpg`} alt=""/>;
   const common = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.75, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
   let paths;
   if (name === 'car' || name === 'motor') paths = <><path d="M4 14.5 6.2 9h11.6l2.2 5.5v3H4v-3Z" {...common}/><path d="M7 17.5v1.2m10-1.2v1.2M7.2 14h.1m9.4 0h.1" {...common}/></>;
@@ -67,13 +69,13 @@ export function ServicesHub({ onClose, onOpenBill }: { onClose: () => void; onOp
     if (plate.left.length !== 2 || plate.middle.length !== 3 || plate.city.length !== 2 || !plate.letter) { setPlateError('همه بخش‌های پلاک را کامل کنید.'); return; }
     setSavedPlate(plate); setPlateError('');
   };
-  return <><FlowShell variant="transfer-compact internal-flow services-hub" title={view === 'index' ? 'کل خدمات تایم‌بانک' : 'خدمات خودرو'} subtitle={view === 'index' ? 'خدمات عمومی امروز و مسیرهای آینده، یک‌جا در دسترس شماست.' : undefined} stepKey={view + savedPlate} onBack={view === 'vehicle' ? () => setView('index') : onClose} onClose={onClose}>
+  return <><FlowShell variant="transfer-compact internal-flow services-hub" title={view === 'index' ? 'خدمات تایم‌بانک' : 'خدمات خودرو'} stepKey={view + savedPlate} onBack={view === 'vehicle' ? () => setView('index') : onClose} onClose={onClose}>
     {view === 'index' ? <>
-      <section className="services-hero"><span><Icon name="services" size={30}/></span><div><h2>کل خدمات تایم‌بانک</h2><p>از امور بانکی تا استعلام‌های روزمره</p></div></section>
-      <section className="service-category"><div className="service-category-title"><div><h2>خودرو</h2><p>خودرو را اضافه کنید و خدمات مربوط به آن را ببینید.</p></div><button onClick={() => setView('vehicle')}>ورود به خودرو <Icon name="chevron" size={15}/></button></div><button className="vehicle-entry-card" onClick={() => setView('vehicle')}><span className="catalog-icon"><ServiceGlyph name="car"/></span><span><strong>خودروهای من</strong><small>افزودن پلاک و مدیریت خدمات خودرو</small></span><b>+</b></button></section>
+      <section className="services-hero"><span><Icon name="services" size={30}/></span><div><h2>خدمات تایم‌بانک</h2><p>از امور بانکی تا استعلام‌های روزمره</p></div></section>
+      <section className="service-category service-primary-actions" aria-label="قبض و خودرو"><motion.button whileTap={{ scale: .96 }} onClick={onOpenBill}><span className="catalog-icon"><ServiceGlyph name="bill"/></span><strong>قبض</strong></motion.button><motion.button whileTap={{ scale: .96 }} onClick={() => setView('vehicle')}><span className="catalog-icon"><ServiceGlyph name="car"/></span><strong>خودرو</strong></motion.button></section>
       <section className="service-category"><div className="service-category-title"><div><h2>استعلامات</h2><p>دسترسی سریع به استعلام‌های پرکاربرد</p></div></div><ServiceGrid items={inquiryServices} onSelect={choose}/></section>
       <section className="service-category"><div className="service-category-title"><div><h2>سایر خدمات عمومی</h2><p>سرویس‌هایی که به‌تدریج به تایم‌بانک اضافه می‌شوند.</p></div></div><ServiceGrid items={commonServices} onSelect={choose}/></section>
-      <section className="service-category compact-special-services"><div className="service-category-title"><div><h2>مالی و پرداخت</h2></div></div><button className="service-wide-row" onClick={onOpenBill}><span className="service-icon"><Icon name="receipt"/></span><span><strong>پرداخت قبض</strong><small>آب، برق، گاز، تلفن همراه و قبوض اوقاف</small></span><Icon name="chevron" size={16}/></button></section>
+
     </> : <>
       {!savedPlate ? <section className="vehicle-onboarding"><span className="vehicle-big-icon"><ServiceGlyph name="car"/></span><h2>پلاک خودرو را اضافه کنید</h2><p>شماره را مطابق کارت خودرو وارد کنید؛ نوع و رنگ پلاک از روی حرف آن مشخص می‌شود.</p><IranPlate value={plate} onChange={next => { setPlate(next); setPlateError(''); }}/>{plateError && <p className="plate-error" role="alert">{plateError}</p>}<ActionButton shape="pill" onClick={savePlate}>افزودن خودرو</ActionButton><button className="demo-fill" onClick={() => { setPlate({ left: '12', letter: 'ب', middle: '345', city: '11' }); setPlateError(''); }}>درج پلاک آزمایشی</button></section> : <><section className="saved-vehicle-card"><div className="saved-vehicle-heading"><span className="vehicle-big-icon"><ServiceGlyph name="car"/></span><div><small>خودروی من</small><strong>{plateKindLabel(savedPlate.letter)}</strong></div><button onClick={() => setSavedPlate(null)}>ویرایش پلاک</button></div><IranPlate value={savedPlate} readOnly /></section><section className="service-category vehicle-service-list"><div className="service-category-title"><div><h2>خدمات این خودرو</h2><p>یک سرویس را برای مشاهده جزئیات انتخاب کنید.</p></div></div><ServiceGrid items={vehicleServices} onSelect={choose}/></section></>}
     </>}

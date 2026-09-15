@@ -1470,3 +1470,13 @@ html[data-theme='dark'] .captured-card-preview { border-color: #ffffff14; backgr
 .identity-success-panel .flow-button { width: 100%; margin: 0; }
 html[data-theme='dark'] .identity-success-panel { color: #fafafa; border-color: #ffffff14; background: #293352; }
 html[data-theme='dark'] .identity-success-panel > p { color: #b7c0ce; }
+
+/* Service artwork uses its own image with the system corner radius. */
+.services-hub .catalog-icon:has(.service-artwork),
+.services-hub .vehicle-big-icon:has(.service-artwork),
+.catalog-detail-icon:has(.service-artwork) { background: transparent; border: 0; padding: 0; box-shadow: none; }
+.service-artwork { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: inherit; }
+.service-primary-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; direction: rtl; }
+.service-primary-actions > button { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 4px; }
+.service-primary-actions .catalog-icon { width: 64px; height: 64px; flex-basis: 64px; }
+.service-primary-actions strong { font-size: 14px; font-weight: 650; }
